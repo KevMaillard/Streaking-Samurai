@@ -48,9 +48,21 @@ namespace BankRoot.Controllers
                             (""Dtransaction"", ""Ctransaction"", amount, status)
                             VALUES (@Dtransaction, @Ctransaction, @amount, @status);";
 
+            string queryUpdate = @"UPDATE ""Account""
+                                 SET amount = ""Account"".amount + @amount2
+                                 WHERE ""Id_account"" = @Ctransaction2;";
+
+            string queryDowngrade = @"UPDATE ""Account""
+                                 SET amount = ""Account"".amount - @amount3
+                                 WHERE ""Id_account"" = @Dtransaction3;";
+
             DataTable table = new DataTable();
+            DataTable tableUpdate = new DataTable();
+            DataTable tableDowngrade = new DataTable();
             string SqlDataSource = _configuration.GetConnectionString("MvcDemoConnectionString");
             NpgsqlDataReader myReader;
+            NpgsqlDataReader myReaderUpdate;
+            NpgsqlDataReader myReaderDowngrade;
             using (NpgsqlConnection myCon = new NpgsqlConnection(SqlDataSource))
             {
                 myCon.Open();
@@ -66,8 +78,33 @@ namespace BankRoot.Controllers
                     myReader.Close();
                     myCon.Close();
                 }
+
+                    myCon.Open();
+                    using (NpgsqlCommand myCommand = new NpgsqlCommand(queryUpdate, myCon))
+                    {
+                        myCommand.Parameters.AddWithValue("@Ctransaction2", transa.Ctransaction);
+                        myCommand.Parameters.AddWithValue("@amount2", transa.amount);
+                        myReaderUpdate = myCommand.ExecuteReader();
+                        tableUpdate.Load(myReaderUpdate);
+
+                        myReaderUpdate.Close();
+                        myCon.Close();
+                    }
+
+                        myCon.Open();
+                        using (NpgsqlCommand myCommand = new NpgsqlCommand(queryDowngrade, myCon))
+                        {
+                            myCommand.Parameters.AddWithValue("@Dtransaction3", transa.Dtransaction);
+                            myCommand.Parameters.AddWithValue("@amount3", transa.amount);
+                            myReaderDowngrade = myCommand.ExecuteReader();
+                            tableDowngrade.Load(myReaderDowngrade);
+
+                            myReaderDowngrade.Close();
+                            myCon.Close();
+                        }
+
             }
-            return new JsonResult("Added Successfully");
+                return new JsonResult("Added Successfully");
         }
     }
 }

@@ -130,5 +130,7 @@ namespace BankRoot.Controllers
             }
             return new JsonResult("Deleted Successfully");
         }
+
+
     }
 }
