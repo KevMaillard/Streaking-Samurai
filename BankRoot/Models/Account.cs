@@ -10,7 +10,7 @@ namespace BankRoot.Models
         public int Id_account { get; set; }
 
         [Column(TypeName = "varchar(50)")]
-        public string account_number { get; set; }
+        public string? account_number { get; set; }
 
         [Column]
         public decimal amount { get; set; }

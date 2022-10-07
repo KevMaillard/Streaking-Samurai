@@ -9,7 +9,7 @@ namespace BankRoot.Models
         public int Id_app_user { get; set; }
 
         [Column(TypeName = "varchar(50)")]
-        public string app_user_number { get; set; }
+        public string? app_user_number { get; set; }
 
         [Column(TypeName = "varchar(50)")]
         public string first_name { get; set; }
