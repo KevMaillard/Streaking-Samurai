@@ -6,7 +6,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace BankRoot.Migrations
 {
-    public partial class Idk : Migration
+    public partial class idk : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -29,7 +29,7 @@ namespace BankRoot.Migrations
                 {
                     Id_app_user = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
-                    app_user_number = table.Column<string>(type: "varchar(50)", nullable: false),
+                    app_user_number = table.Column<string>(type: "varchar(50)", nullable: true),
                     first_name = table.Column<string>(type: "varchar(50)", nullable: false),
                     last_name = table.Column<string>(type: "varchar(50)", nullable: false),
                     email = table.Column<string>(type: "varchar(50)", nullable: false),
@@ -53,7 +53,7 @@ namespace BankRoot.Migrations
                 {
                     Id_account = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
-                    account_number = table.Column<string>(type: "varchar(50)", nullable: false),
+                    account_number = table.Column<string>(type: "varchar(50)", nullable: true),
                     amount = table.Column<decimal>(type: "numeric", nullable: false),
                     account_status = table.Column<string>(type: "varchar(50)", nullable: false),
                     Id_app_user = table.Column<int>(type: "integer", nullable: false)
