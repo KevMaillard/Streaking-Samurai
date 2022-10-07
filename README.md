@@ -39,11 +39,33 @@ Simulation de projet client, le client étant une banque, cherchant à renouvele
 
 ## **Livrables**  
 
-#### **MCD**  
+#### **Dictionnaire de données**
+
+| NOM                | DESIGNATION               | Type         |
+| ------------------ | ------------------------- | ------------ |
+| client_number      | Numéro du client          | VARCHAR(150) |
+| client_password    | Mot de passe client       | VARCHAR(150) |
+| first_name         | Nom client                | VARCHAR(75)  |
+| last_name          | Prenom client             | VARCHAR(75)  |
+| email              | Email Client              | VARCHAR(150) |
+| is_admin           | Status admin              | Booleen      |
+| account_number     | Numero du compte          | INT          |
+| account_amount     | Solde du compte           | DECIMAL      |
+| account_status     | Etat du compte            | Booleen      |
+| transaction_date   | Date de transaction       | DATETIME     |
+| transaction_amount | Montant de la transaction | DECIMAL      |
+| transaction_status | Etat de la transaction    | VARCHAR(50)  |     |
+
+#### **MCD**
+![Screenshot](Merise-UML/MCD.png)   
 #### **MLD**  
+![Screenshot](Merise-UML/MLD.png)
 #### **USE CASES**  
-#### **SEQUENCE DIAGRAM**  
+![Screenshot](Merise-UML/use%20case.png)
+#### **SEQUENCE DIAGRAM**
+![Screenshot](Merise-UML/sequence.png)  
 #### **CLASS DIAGRAM**  
+![Screenshot](Merise-UML/classes.png)
 #### Plan de sécurisation (fourni à côté)  (lien cliquable)
 
 ## **Technologies utilisées**  
