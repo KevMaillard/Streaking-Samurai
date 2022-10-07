@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BankRoot.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20221004211802_PleaseMakeThisTheLastMigration")]
-    partial class PleaseMakeThisTheLastMigration
+    [Migration("20221005134450_iknow")]
+    partial class iknow
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -110,10 +110,16 @@ namespace BankRoot.Migrations
 
             modelBuilder.Entity("BankRoot.Models.Transaction", b =>
                 {
-                    b.Property<int>("Dtransaction")
+                    b.Property<int>("Id_transaction")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
+                    NpgsqlPropertyBuilderExtensions.UseSerialColumn(b.Property<int>("Id_transaction"));
+
                     b.Property<int>("Ctransaction")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Dtransaction")
                         .HasColumnType("integer");
 
                     b.Property<decimal>("amount")
@@ -126,9 +132,11 @@ namespace BankRoot.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(10)");
 
-                    b.HasKey("Dtransaction", "Ctransaction");
+                    b.HasKey("Id_transaction");
 
                     b.HasIndex("Ctransaction");
+
+                    b.HasIndex("Dtransaction");
 
                     b.ToTable("Transaction");
                 });

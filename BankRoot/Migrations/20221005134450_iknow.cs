@@ -6,7 +6,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace BankRoot.Migrations
 {
-    public partial class Idk : Migration
+    public partial class iknow : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
