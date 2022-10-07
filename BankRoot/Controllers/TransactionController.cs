@@ -61,114 +61,100 @@ namespace BankRoot.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id_transaction,Dtransaction,Ctransaction,date_transaction,amount,status")] Transaction transaction)
         {
-            if (ModelState.IsValid)
-            {
-                _context.Add(transaction);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["Ctransaction"] = new SelectList(_context.Account, "Id_account", "Id_account", transaction.Ctransaction);
-            ViewData["Dtransaction"] = new SelectList(_context.Account, "Id_account", "Id_account", transaction.Dtransaction);
-            return View(transaction);
-        }
+            string query = @"INSERT INTO ""Transaction""
+                            (""Dtransaction"", ""Ctransaction"", date_transaction, amount, status)
+                            VALUES (@Dtransaction, @Ctransaction, @date_transaction, @amount, @status);";
 
-        // GET: Transaction/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null || _context.Transaction == null)
-            {
-                return NotFound();
-            }
+            string queryUpdate = @"UPDATE ""Account""
+                                 SET amount = ""Account"".amount + @amount2
+                                 WHERE ""Id_account"" = @Ctransaction2;";
 
-            var transaction = await _context.Transaction.FindAsync(id);
-            if (transaction == null)
-            {
-                return NotFound();
-            }
-            ViewData["Ctransaction"] = new SelectList(_context.Account, "Id_account", "Id_account", transaction.Ctransaction);
-            ViewData["Dtransaction"] = new SelectList(_context.Account, "Id_account", "Id_account", transaction.Dtransaction);
-            return View(transaction);
-        }
+            string queryDowngrade = @"UPDATE ""Account""
+                                 SET amount = ""Account"".amount - @amount3
+                                 WHERE ""Id_account"" = @Dtransaction3;";
 
-        // POST: Transaction/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id_transaction,Dtransaction,Ctransaction,date_transaction,amount,status")] Transaction transaction)
-        {
-            if (id != transaction.Id_transaction)
-            {
-                return NotFound();
-            }
+            DateTime date = DateTime.Now;
 
-            if (ModelState.IsValid)
+            DataTable table = new DataTable();
+            DataTable tableUpdate = new DataTable();
+            DataTable tableDowngrade = new DataTable();
+            string SqlDataSource = _configuration.GetConnectionString("MvcDemoConnectionString");
+            NpgsqlDataReader myReader;
+            NpgsqlDataReader myReaderUpdate;
+            NpgsqlDataReader myReaderDowngrade;
+            using (NpgsqlConnection myCon = new NpgsqlConnection(SqlDataSource))
             {
-                try
+                myCon.Open();
+                using (NpgsqlCommand myCommand = new NpgsqlCommand(query, myCon))
                 {
-                    _context.Update(transaction);
-                    await _context.SaveChangesAsync();
+                    myCommand.Parameters.AddWithValue("@Dtransaction", transa.Dtransaction);
+                    myCommand.Parameters.AddWithValue("@Ctransaction", transa.Ctransaction);
+                    myCommand.Parameters.AddWithValue("@date_transaction", date);
+                    myCommand.Parameters.AddWithValue("@amount", transa.amount);
+                    myCommand.Parameters.AddWithValue("@status", transa.status);
+                    myReader = myCommand.ExecuteReader();
+                    table.Load(myReader);
+
+                    myReader.Close();
+                    myCon.Close();
                 }
-                catch (DbUpdateConcurrencyException)
+
+                    myCon.Open();
+                    using (NpgsqlCommand myCommand = new NpgsqlCommand(queryUpdate, myCon))
+                    {
+                        myCommand.Parameters.AddWithValue("@Ctransaction2", transa.Ctransaction);
+                        myCommand.Parameters.AddWithValue("@amount2", transa.amount);
+                        myReaderUpdate = myCommand.ExecuteReader();
+                        tableUpdate.Load(myReaderUpdate);
+
+                        myReaderUpdate.Close();
+                        myCon.Close();
+                    }
+
+                        myCon.Open();
+                        using (NpgsqlCommand myCommand = new NpgsqlCommand(queryDowngrade, myCon))
+                        {
+                            myCommand.Parameters.AddWithValue("@Dtransaction3", transa.Dtransaction);
+                            myCommand.Parameters.AddWithValue("@amount3", transa.amount);
+                            myReaderDowngrade = myCommand.ExecuteReader();
+                            tableDowngrade.Load(myReaderDowngrade);
+
+                            myReaderDowngrade.Close();
+                            myCon.Close();
+                        }
+
+            }
+                return new JsonResult("Added Successfully");
+        }
+
+        [HttpGet("Details")]
+        public JsonResult Details()
+        {
+            string query = @"SELECT * FROM ""Transaction""
+                            INNER JOIN ""Account"" ON ""Account"".""Id_account"" = ""Transaction"".""Ctransaction""
+                            INNER JOIN ""App_user"" ON ""Account"".""Id_app_user"" = ""App_user"".""Id_app_user""
+                            INNER JOIN ""Role"" ON ""App_user"".""Id_role"" = ""Role"".""Id_role""
+                            INNER JOIN ""Account"" AS Acc ON Acc.""Id_account"" = ""Transaction"".""Dtransaction""
+                            INNER JOIN ""App_user"" AS App ON Acc.""Id_app_user"" = App.""Id_app_user""
+                            INNER JOIN ""Role"" AS Rol ON App.""Id_role"" = Rol.""Id_role""";
+
+            DataTable table = new DataTable();
+            string SqlDataSource = _configuration.GetConnectionString("MvcDemoConnectionString");
+            NpgsqlDataReader myReader;
+            using (NpgsqlConnection myCon = new NpgsqlConnection(SqlDataSource))
+            {
+                myCon.Open();
+                using (NpgsqlCommand myCommand = new NpgsqlCommand(query, myCon))
                 {
-                    if (!TransactionExists(transaction.Id_transaction))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    myReader = myCommand.ExecuteReader();
+                    table.Load(myReader);
+
+                    myReader.Close();
+                    myCon.Close();
                 }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["Ctransaction"] = new SelectList(_context.Account, "Id_account", "Id_account", transaction.Ctransaction);
-            ViewData["Dtransaction"] = new SelectList(_context.Account, "Id_account", "Id_account", transaction.Dtransaction);
-            return View(transaction);
-        }
-
-        // GET: Transaction/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null || _context.Transaction == null)
-            {
-                return NotFound();
             }
 
-            var transaction = await _context.Transaction
-                .Include(t => t.AccountC)
-                .Include(t => t.AccountD)
-                .FirstOrDefaultAsync(m => m.Id_transaction == id);
-            if (transaction == null)
-            {
-                return NotFound();
-            }
-
-            return View(transaction);
-        }
-
-        // POST: Transaction/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            if (_context.Transaction == null)
-            {
-                return Problem("Entity set 'DataContext.Transaction'  is null.");
-            }
-            var transaction = await _context.Transaction.FindAsync(id);
-            if (transaction != null)
-            {
-                _context.Transaction.Remove(transaction);
-            }
-            
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool TransactionExists(int id)
-        {
-          return _context.Transaction.Any(e => e.Id_transaction == id);
+            return new JsonResult(table);
         }
     }
 }
