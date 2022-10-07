@@ -53,3 +53,5 @@ Simulation de projet client, le client étant une banque, cherchant à renouvele
 	ORM : Entity framework  
 	Interpreteur front : Razor  
 	Langages : c#, html, javascript, css, (cshtml), SQL (postgre flavor)   
+
+	qsf
