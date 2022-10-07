@@ -55,3 +55,4 @@ Simulation de projet client, le client étant une banque, cherchant à renouvele
 	Langages : c#, html, javascript, css, (cshtml), SQL (postgre flavor)   
 
 	qsf
+	2
